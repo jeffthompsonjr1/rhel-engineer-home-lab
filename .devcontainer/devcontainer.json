@@ -1,0 +1,5 @@
+{
+  "name": "Ansible Dev Environment",
+  "image": "ghcr.io/ansible/community-ansible-dev-tools:latest",
+  "workspaceFolder": "/workspaces/ansible-dev"
+}
