@@ -1,0 +1,19 @@
+---
+- name: Manage lab users
+  hosts: centos
+  become: true
+
+  tasks:
+    - name: Create testuser1
+      ansible.builtin.user: 
+        name: testuser1
+        state: present
+        shell: /bin/bash
+        create_home: true
+
+    - name: Create testuser2
+      ansible.builtin.user: 
+        name: testuser2
+        state: present
+        shell: /sbin/nologin
+        create_home: true
