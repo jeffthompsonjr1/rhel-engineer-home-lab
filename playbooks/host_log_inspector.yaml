@@ -1,0 +1,30 @@
+---
+- name: Inspect host logs
+  hosts: centos
+  become: true
+
+  tasks:
+    - name: Check for var log messages
+      ansible.builtin.stat:
+        path: /var/log/messages
+      register: logs
+
+    - name: Print a debug message
+      ansible.builtin.debug:
+        msg: "path doesn't exist"
+      when: logs.stat.exists is false
+
+    - name: Print a debug message
+      ansible.builtin.debug:
+        msg: "path exists"
+      when: logs.stat.exists is true 
+
+    - name: Run the tail command if log file exists 
+      ansible.builtin.command: tail -n 10 /var/log/messages
+      register: last_10_lines
+      when: logs.stat.exists is true
+      changed_when: false
+
+    - name: Print return information from the previous task
+      ansible.builtin.debug:
+        var: last_10_lines.stdout_lines
