@@ -4,3 +4,6 @@ centos_serverb ansible_host=192.168.152.145 ansible_user=centos ansible_become_p
 
 [windows]
 windows_server ansible_host=192.168.152.135 ansible_user=administrator ansible_connection=ssh ansible_shell_type=powershell
+
+[log_server]
+rhel-dev02 ansible_host=192.168.12.126  ansible_user=systemadmin ansible_become_pass=IL0vemyrhel1983
