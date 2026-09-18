@@ -1,0 +1,26 @@
+---
+- name: Assign Ansible_Server user to the inventory
+  hosts: 
+   - centos
+   - rhel-dev02
+  become: true
+  tasks: 
+
+    - name: Ensure Ansible_Server user created
+      ansible.builtin.user:
+        name: ansible_server
+        comment: Ansible Controller
+        uid: 9999
+        create_home: yes
+        groups: wheel
+        append: yes
+        shell: /bin/bash
+        password: "$6$rounds=100000$9.tyHPhdVkRCve9s$h8bHAWgkseNqCWwzGrSYNk/TsMAz8L5SmdYUpJSoIaG9AFGTuPshuLIfDakNYvYDkBSJdWB8Wb/rG55xVVBHt."
+
+    - name: Verify Ansible_server created
+      ansible.builtin.command: tail -5 /etc/passwd
+      register: printout
+
+    - name: Display printout
+      ansible.builtin.debug:
+        var: printout.stdout_lines

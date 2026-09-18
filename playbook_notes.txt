@@ -1,0 +1,35 @@
+Manually configuration:
+
+1.Create Drop File on Rhel-Dev02
+/etc/rsyslog.d/remote_logging.conf
+
+2.Add TCP input modules:
+
+# Provides TCP syslog reception
+# for parameters see http://www.rsyslog.com/doc/imtcp.html
+module(load="imtcp") # needs to be done just once
+input(type="imtcp" port="514")
+
+3.Add template and action for DynaFile
+#template (name="Remote_Logger" type="string" string="/var/log/remote/%HOSTNAME%/secure.log")
+action (type="omfile" DynaFile="Remote_Logger")
+
+
+4.Test the syntax
+rsyslogd -N 1
+
+5.Restart rsyslog service
+systemctl restart rsyslog.service
+
+6.Add port to firewall and reload
+firewall-cmd --add-port=514/tcp --permanent
+firewall-cmd --reload
+
+7.Verify port is listening
+ss -tln
+
+8.Set up sender servers rsyslog files.
+vi /etc/rsyslog.d/remote_logs.conf
+authpriv.* action(type="omfwd" target="rhel-dev02.lab.example.com" port="514" protocol="tcp")
+
+9. Test servers 
