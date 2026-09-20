@@ -1,8 +1,6 @@
 ---
 ansible-navigator:
+  mode: stdout
+
   execution-environment:
     enabled: false
-    image: ghcr.io/ansible/community-ansible-dev-tools:latest
-    pull:
-      policy: missing
-  mode: stdout

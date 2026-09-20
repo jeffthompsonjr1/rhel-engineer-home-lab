@@ -16,11 +16,29 @@
         append: yes
         shell: /bin/bash
         password: "$6$rounds=100000$9.tyHPhdVkRCve9s$h8bHAWgkseNqCWwzGrSYNk/TsMAz8L5SmdYUpJSoIaG9AFGTuPshuLIfDakNYvYDkBSJdWB8Wb/rG55xVVBHt."
+    
+
+    - name: Ensure hosts have ansible_server sudoer file
+      ansible.builtin.copy:
+        src: files/ansible_server
+        dest: /etc/sudoers.d/ansible_server
+        owner: root
+        group: root
+        mode: '0440'
+
+    - name: verify file ansible_server file copy
+      ansible.builtin.command: ls -l /etc/sudoers.d/
+      register: listing
 
     - name: Verify Ansible_server created
-      ansible.builtin.command: tail -5 /etc/passwd
+      ansible.builtin.command: tail -5 /etc/passwd 
       register: printout
 
     - name: Display printout
       ansible.builtin.debug:
         var: printout.stdout_lines
+   
+
+    - name: Display listing
+      ansible.builtin.debug:
+        var: listing.stdout_lines

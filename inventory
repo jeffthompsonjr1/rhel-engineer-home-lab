@@ -1,10 +1,10 @@
 [centos]
-centos_servera ansible_host=10.10.10.4 ansible_user=centos ansible_become_pass=[REDACTED]
-centos_serverb ansible_host=10.10.10.8 ansible_user=centos ansible_become_pass=[REDACTED]
+centos_servera ansible_host=10.10.10.4 ansible_user=ansible_server 
+centos_serverb ansible_host=10.10.10.8 ansible_user=ansible_server 
 
 [rhel]
-rhel-dev02 ansible_host=10.10.10.12 ansible_user=systemadmin ansible_become_pass=[REDACTED]
-rhel-dev01 ansible_host=10.10.10.11 ansible_user=systemadmin ansible_become_pass=[REDACTED]
+rhel-dev01 ansible_host=10.10.10.11 ansible_user=ansible_server 
+rhel-dev02 ansible_host=10.10.10.12 ansible_user=ansible_server 
 
 [windows]
 windows_server ansible_host=192.168.4.40 ansible_user=administrator ansible_connection=ssh ansible_shell_type=powershell
@@ -15,4 +15,12 @@ rhel-dev02
 [remote_log_clients]
 centos_servera
 centos_serverb
-rhel-dev01 
+rhel-dev01
+
+[linux:children]
+centos
+rhel
+
+[linux:vars]
+ansible_user=ansible_server
+ansible_ssh_private_key_file=/root/.ssh/ansible_lab

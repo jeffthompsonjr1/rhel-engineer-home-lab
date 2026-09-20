@@ -1,0 +1,21 @@
+#Runtime logs
+*.log
+*.retry
+
+# SSH/private credentials
+*.pem
+*.key
+id_rsa
+id_ed25519
+
+# Ansible secrets
+vault_password*
+*.vault-pass
+
+# Editor/temp files
+*~
+*.swp
+
+# Python cache
+__pycache__/
+*.pyc

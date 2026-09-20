@@ -1,0 +1,87 @@
+---
+- name: Deploying a remote log server to rhel-dev02
+  hosts: remote_log_server
+  become: true
+  
+  tasks:
+   - name: Ensure correct packages are installed
+     ansible.builtin.dnf:
+       name: 
+         - firewalld
+         - rsyslog
+       state: present
+
+   - name: Ensure required services are started and enabled
+     ansible.builtin.systemd:
+       name: "{{ item }}"
+       state: "started"
+       enabled: true
+     loop:
+      - firewalld.service
+      - rsyslog.service
+
+   - name: Ensure config file is copied to the remote log server
+     ansible.builtin.copy:
+       src:  files/remote_logger.conf
+       dest: /etc/rsyslog.d/remote_logger.conf
+       owner: root
+       group: root
+       mode: '0644'
+     notify: Restart rsyslog
+
+ 
+   - name: Permit traffic in default zone in port 514/tcp
+     ansible.posix.firewalld:
+        port: 514/tcp
+        permanent: true
+        state: enabled
+     notify: Firewall reload
+  
+  handlers:
+    - name: Restart rsyslog
+      ansible.builtin.systemd:
+        name: rsyslog.service
+        state: restarted
+
+    - name: Firewall reload
+      ansible.builtin.command:  firewall-cmd --reload
+
+- name: Deploy remote log senders
+  hosts: remote_log_clients
+  become: true
+
+  tasks:
+   - name: Ensure correct packages are installed
+     ansible.builtin.dnf:
+       name: rsyslog
+       state: present
+    
+   - name: Ensure required services are started and enabled
+     ansible.builtin.systemd:
+       name: rsyslog.service
+       state: "started"
+       enabled: true
+    
+      
+      
+     
+   - name: Copy config file to senders
+     ansible.builtin.copy:
+       src:  files/remote_logs.conf
+       dest: /etc/rsyslog.d/remote_logs.conf
+       owner: root
+       group: root
+       mode: 0644
+     notify: Restart rsyslog
+
+  
+  handlers:
+    - name: Restart rsyslog
+      ansible.builtin.systemd:
+        name: rsyslog.service
+        state: restarted
+
+    
+
+      
+      
