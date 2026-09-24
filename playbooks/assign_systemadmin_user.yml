@@ -1,0 +1,43 @@
+---
+- name: Assign Ansible_Server user to the inventory
+  hosts: 
+   - centos
+   
+  become: true
+  tasks: 
+
+    - name: Ensure System Admin user created
+      ansible.builtin.user:
+        name: systemadmin
+        comment: System Admin
+        create_home: yes
+        groups: wheel
+        append: yes
+        shell: /bin/bash
+        
+    
+
+    - name: Ensure hosts have ansible_server sudoer file
+      ansible.builtin.copy:
+        src: files/systemadmin
+        dest: /etc/sudoers.d/systemadmin
+        owner: root
+        group: root
+        mode: '0440'
+
+    - name: verify file ansible_server file copy
+      ansible.builtin.command: ls -l /etc/sudoers.d/
+      register: listing
+
+    - name: Verify Ansible_server created
+      ansible.builtin.command: tail -5 /etc/passwd 
+      register: printout
+
+    - name: Display printout
+      ansible.builtin.debug:
+        var: printout.stdout_lines
+   
+
+    - name: Display listing
+      ansible.builtin.debug:
+        var: listing.stdout_lines

@@ -1,0 +1,21 @@
+---
+- name: Ensure hosts receive the lastest updates
+  hosts: 
+  - centos
+  - rhel
+  become: true
+
+  tasks:
+   - name: Run latests dnf update
+     ansible.builtin.command: dnf update -y
+
+   - name: Verify latests update
+     ansible.builtin.command: dnf history
+     register: dnf_history
+
+   - name: Display dnf history results
+     ansible.builtin.debug:
+       var: dnf_history.stdout_lines
+
+ 
+    

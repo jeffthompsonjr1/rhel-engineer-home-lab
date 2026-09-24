@@ -1,0 +1,26 @@
+---
+- name: Establish Baseline configurations for environment.
+  hosts: 
+   - rhel
+   - centos
+  become: true
+
+  tasks:
+
+   - name: Ensure baseline configuration directory in systemadmin home folder.
+     ansible.builtin.file:
+       path: ~/baseline_configs
+       state: directory
+       mode: '0755'
+
+   - name: Ensure AIDE installed
+     ansible.builtin.dnf:
+       name: aide
+       state: present
+
+   - name: Run baseline SOS report
+     ansible.builtin.command: sos-report --tmp-dir ~/baseline_configs
+
+   - name: Ensure SOS report extracted
+     ansible.builtin.command: tar -cxf ~/baseline_configs/sos* ~/baseline_configs   
+     

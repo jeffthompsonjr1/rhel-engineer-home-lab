@@ -1,0 +1,100 @@
+---
+- name: Establish baseline configurations for environment
+  hosts:
+    - rhel
+    - centos
+  become: true
+
+  vars:
+    baseline_dir: /home/systemadmin/baseline_configs
+    aide_database: /var/lib/aide/aide.db.gz
+    aide_new_database: /var/lib/aide/aide.db.new.gz
+
+  tasks:
+
+    - name: Ensure baseline configuration directory exists
+      ansible.builtin.file:
+        path: "{{ baseline_dir }}"
+        state: directory
+        owner: systemadmin
+        group: systemadmin
+        mode: '0755'
+
+    - name: Ensure AIDE is installed
+      ansible.builtin.dnf:
+        name: aide
+        state: present
+
+    # -------------------------
+    # SOS baseline
+    # -------------------------
+
+    - name: Check whether an SOS baseline already exists
+      ansible.builtin.find:
+        paths: "{{ baseline_dir }}"
+        patterns: "sosreport-*"
+        file_type: file
+      register: sos_reports
+
+    - name: Generate baseline SOS report if one does not exist
+      ansible.builtin.command:
+        cmd: sos report --batch --tmp-dir "{{ baseline_dir }}"
+      register: sos_report_result
+      when: sos_reports.matched == 0
+
+    # - name: Ensure SOS report extracted
+    #   ansible.builtin.command: tar -cxf "{{ baseline_dir}}"/sos* "{{ baseline_dir }}"
+    
+    
+    # -------------------------
+    # AIDE baseline
+    # -------------------------
+
+    - name: Check whether AIDE baseline database exists
+      ansible.builtin.stat:
+        path: "{{ aide_database }}"
+      register: aide_db
+
+    - name: Initialize AIDE database if baseline does not exist
+      ansible.builtin.command:
+        cmd: aide --init
+      when: not aide_db.stat.exists
+
+    - name: Promote new AIDE database to current baseline
+      ansible.builtin.command:
+        cmd: mv "{{ aide_new_database }}" "{{ aide_database }}"
+      when: not aide_db.stat.exists
+
+    - name: Check system against existing AIDE baseline
+      ansible.builtin.command:
+        cmd: aide --check
+      register: aide_check
+      changed_when: false
+      failed_when: aide_check.rc not in [0, 1, 2, 3, 4, 5, 6, 7]
+      when: aide_db.stat.exists
+
+    # -------------------------
+    # Baseline access
+    # -------------------------
+
+    - name: Ensure symlink to AIDE database exists in baseline directory
+      ansible.builtin.file:
+        src: "{{ aide_database }}"
+        dest: "{{ baseline_dir }}/link_to_aide.db.gz"
+        owner: systemadmin
+        group: systemadmin
+        state: link
+
+    # -------------------------
+    # Verification
+    # -------------------------
+
+    - name: Find baseline products
+      ansible.builtin.find:
+        paths: "{{ baseline_dir }}"
+        file_type: any
+      register: baseline_products
+
+    - name: Display baseline products
+      ansible.builtin.debug:
+        msg: "{{ baseline_products.files | map(attribute='path') | list }}"
