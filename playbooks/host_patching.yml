@@ -15,7 +15,15 @@
 
    - name: Display dnf history results
      ansible.builtin.debug:
-       var: dnf_history.stdout_lines
+       var: dnf_history
+
+   - name: Verify no changes to AIDE db.
+     ansible.builtin.command: aide -C
+     register: aide_output
+
+   - name: Display aide check output
+     ansible.builtin.debug:
+       var: aide_output.stdout_line
 
  
     
