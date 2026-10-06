@@ -22,5 +22,41 @@
      ansible.builtin.command: sos-report --tmp-dir ~/baseline_configs
 
    - name: Ensure SOS report extracted
-     ansible.builtin.command: tar -cxf ~/baseline_configs/sos* ~/baseline_configs   
+     ansible.builtin.command: tar -cxf ~/baseline_configs/sos* ~/baseline_configs 
+
+   - name: Check whether AIDE baseline database exists
+     ansible.builtin.stat:
+      path: /var/lib/aide/aide.db.gz
+     register: aide_db
+
+   - name: Initialize AIDE database if baseline does not exist
+     ansible.builtin.command: aide --init
+     when: not aide_db.stat.exists
+
+   - name: Promote new AIDE database to current baseline
+     ansible.builtin.command:
+        cmd: mv /var/lib/aide/aide.db.new.gz /var/lib/aide/aide.db.gz
+     when: not aide_db.stat.exists
+
+   - name: Check system against existing AIDE baseline
+     ansible.builtin.command: aide --check
+     register: aide_check
+     changed_when: false
+     when: aide_db.stat.exists
+
+   - name: create symlink to aide db in baseline_config dir
+     ansible.builtin.file:
+      src: /var/lib/aide/aide.db.gz
+      dest: ~/baseline_configs/link_to_aide.db.gz
+      owner: systemadmin
+      group: systemadmin
+      state: link
+
+   - name: List baseline directory
+     ansible.builtin.command: ls -l ~/basline_configs
+     register: baseline_products
+
+   - name: display baseline dir
+     ansible.builtin.debug:
+     var: baseline_products.stdout_line
      

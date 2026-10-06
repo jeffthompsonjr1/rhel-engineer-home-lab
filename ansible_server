@@ -1,0 +1,2 @@
+[sudo] password for systemadmin: 
+ansible_server ALL=(ALL)	NOPASSWD: ALL

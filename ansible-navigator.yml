@@ -3,4 +3,10 @@ ansible-navigator:
   mode: stdout
 
   execution-environment:
+    container-engine: podman
     enabled: false
+    image: ghcr.io/ansible/community-ansible-dev-tools:latest
+    pull: 
+      policy: missing
+      arguments:
+       - "--tls-verify=false"
