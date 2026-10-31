@@ -10,6 +10,9 @@
        - httpd
        - mariadb-server
        - php-fpm
+       - mod_ssl
+       - python3.11
+       - python3.11-pip
       state: present
 
    - name: Ensure packages are enabled and running
@@ -51,7 +54,50 @@
       group: root
       mode: '0755'
      loop:
-       - /var/www/public
-       - /var/www/public/annies
-       - /var/www/public/zys-bakes
-       - /var/www/public/tech
+      - /var/www/public
+      - /var/www/public/annies
+      - /var/www/public/zys-bakes
+      - /var/www/public/tech
+
+   - name: Deploy TLC Apache configuration
+     ansible.builtin.copy:
+      src: /workspaces/rhel-engineer-home-lab/files/tlc.conf
+      dest: /etc/httpd/conf.d/tlc.conf
+      owner: root
+      group: root
+      mode: '0644'
+     notify: Reload Apache
+
+   - name: Deploy TLC web files
+     ansible.builtin.copy:
+      src: /workspaces/rhel-engineer-home-lab/files/website-archives/public.zip
+      dest: /var/www/
+      owner: root
+      group: root
+      mode: '0644'
+
+   - name: Unzip TLC on Rhel-Webserver
+     ansible.builtin.unarchive:
+      src: /var/www/public.zip
+      dest: /var/www/
+      remote_src: true
+
+   - name: Deploy Annies web files
+     ansible.builtin.copy:
+      src: /workspaces/rhel-engineer-home-lab/files/website-archives/annies_lab.zip
+      dest: /var/www/public/annies/
+      owner: root
+      group: root
+      mode: '0644'
+
+   - name: Unzip Annies on Rhel-Webserver
+     ansible.builtin.unarchive:
+      src: /var/www/public/annies/annies_lab.zip
+      dest: /var/www/public/annies/
+      remote_src: true
+
+  handlers:
+   - name: Reload Apache
+     ansible.builtin.service:
+      name: httpd
+      state: reloaded
