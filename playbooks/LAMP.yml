@@ -1,0 +1,57 @@
+---
+- name: Deploy LAMP Server to webserver
+  hosts: webservers
+  become: true
+
+  tasks:
+   - name: Ensure correct packages are installed
+     ansible.builtin.dnf:
+      name:
+       - httpd
+       - mariadb-server
+       - php-fpm
+      state: present
+
+   - name: Ensure packages are enabled and running
+     ansible.builtin.systemd:
+      state: started
+      name: "{{ item }}"
+      enabled: true
+     loop:
+      - firewalld.service
+      - httpd.service
+      - php-fpm.service
+      - mariadb.service
+
+   - name: Permanetly enable http services
+     ansible.posix.firewalld:
+      service: "{{ item }}"  
+      state: enabled
+      immediate: true
+      permanent: true
+     loop:
+      - http
+      - https
+
+   - name: Permanetly enable http ports
+     ansible.posix.firewalld:
+      port: "{{ item }}" 
+      state: enabled
+      immediate: true
+      permanent: true
+     loop:
+      - 80/tcp
+      - 443/tcp
+
+   - name: Create website directories
+     ansible.builtin.file:
+      path: "{{ item }}"
+      state: directory
+      owner: root
+      group: root
+      mode: '0755'
+     loop:
+       - /var/www/public
+       - /var/www/public/annies
+       - /var/www/public/zys-bakes
+       - /var/www/public/tech
