@@ -1,0 +1,20 @@
+---
+- name: Secure mariadb on webserver
+  hosts: webservers
+  become: true
+  tasks:
+
+   - name: Deploy mariadb secure template
+     ansible.builtin.template:
+      src: ../templates/mariadb-security.cnf.j2
+      dest: /etc/my.cnf.d/99-local-security.cnf
+      owner: root
+      group: root
+      mode: '0644'
+     notify: Mariadb_restart
+
+  handlers:
+   - name: Mariadb_restart
+     ansible.builtin.systemd_service:
+      name: mariadb
+      state: restarted
