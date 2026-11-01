@@ -16,6 +16,9 @@ vault_password*
 *~
 *.swp
 
+# Local website archives — do not commit
+files/website-archives/*.zip
+
 # Python cache
 __pycache__/
 *.pyc
