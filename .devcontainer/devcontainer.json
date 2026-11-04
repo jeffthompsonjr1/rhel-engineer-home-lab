@@ -1,5 +1,11 @@
 {
   "name": "Ansible Dev Environment",
   "image": "ghcr.io/ansible/community-ansible-dev-tools:latest",
-  "workspaceFolder": "/workspaces/rhel-engineer-home-lab"
+  "workspaceFolder": "/workspaces/rhel-engineer-home-lab",
+"mounts": [
+  "source=${localEnv:HOME}/.local/share/ansible-container/ssh/ansible_lab,target=/mnt/host-ssh/ansible_lab,type=bind,readonly",
+  "source=${localEnv:HOME}/.local/share/ansible-container/ssh/known_hosts,target=/mnt/host-ssh/known_hosts,type=bind,readonly",
+  "source=${localEnv:HOME}/.local/share/ansible-container/ssh/config,target=/mnt/host-ssh/config,type=bind,readonly"
+],
+"postCreateCommand": "mkdir -p /root/.ssh && printf 'Include /mnt/host-ssh/config\\n' > /root/.ssh/config && chmod 600 /root/.ssh/config"
 }
