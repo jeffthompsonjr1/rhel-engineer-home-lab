@@ -1,0 +1,26 @@
+
+================= SYSTEM INFO =========================
+
+HOSTNAME:       rhel-dev01.lab.example.com
+
+OS              Operating System: Red Hat Enterprise Linux 9.8 (Plow)
+
+KERNEL:         5.14.0-687.61.1.el9_8.x86_64
+
+ARCH:           x86_64
+
+VIRTUALIZATION:   Virtualization: vmware
+
+SYSTEM ROLE:    Ansible-Controller
+
+PATCH HISTORY: Not root, Subscription Management repositories not updated
+ID     | Command line                                                   | Date and time    | Action(s)      | Altered
+---------------------------------------------------------------------------------------------------------------------
+    25 | install virt-viewer                                            | 2026-11-05 12:17 | Install        |    3   
+    24 | install tldr -y                                                | 2026-11-03 07:50 | Install        |    4  <
+    23 | install https://dl.fedoraproject.org/pub/epel/epel-release-lat | 2026-11-03 07:49 | Install        |    1 >E
+    22 | install -y tailscale                                           | 2026-11-01 16:07 | Install        |    1  <
+    21 | update -y                                                      | 2026-10-27 17:43 | C, E, I, U     |  148 > 
+    20 | install gvim                                                   | 2026-10-05 20:06 | I, U           |    3   
+    19 |                                                                | 2026-10-04 19:47 | Install        |    1   
+

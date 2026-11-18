@@ -1,0 +1,102 @@
+
+================= SYSTEM INFO =========================
+
+HOSTNAME:       rhel-dev01.lab.example.com
+
+OS              Operating System: Red Hat Enterprise Linux 9.8 (Plow)
+
+KERNEL:         5.14.0-687.61.1.el9_8.x86_64
+
+ARCH:           x86_64
+
+VIRTUALIZATION:   Virtualization: vmware
+
+SYSTEM ROLE:    RHEL Controller
+
+PATCH HISTORY: 
+Not root, Subscription Management repositories not updated
+ID     | Command line                                                            | Date and time    | Action(s)      | Altered
+------------------------------------------------------------------------------------------------------------------------------
+    25 | install virt-viewer                                                     | 2026-11-05 12:17 | Install        |    3   
+    24 | install tldr -y                                                         | 2026-11-03 07:50 | Install        |    4  <
+    23 | install https://dl.fedoraproject.org/pub/epel/epel-release-latest-9.noa | 2026-11-03 07:49 | Install        |    1 >E
+    22 | install -y tailscale                                                    | 2026-11-01 16:07 | Install        |    1  <
+    21 | update -y                                                               | 2026-10-27 17:43 | C, E, I, U     |  148 > 
+    20 | install gvim                                                            | 2026-10-05 20:06 | I, U           |    3   
+    19 |                                                                         | 2026-10-04 19:47 | Install        |    1   
+
+ACTIVE SERVICES: 
+  UNIT                                                  LOAD   ACTIVE SUB     DESCRIPTION
+  accounts-daemon.service                               loaded active running Accounts Service
+  alsa-state.service                                    loaded active running Manage Sound Card State (restore and store)
+  atd.service                                           loaded active running Deferred execution scheduler
+  auditd.service                                        loaded active running Security Auditing Service
+  chronyd.service                                       loaded active running NTP client/server
+  colord.service                                        loaded active running Manage, Install and Generate Color Profiles
+  crond.service                                         loaded active running Command Scheduler
+  cups.service                                          loaded active running CUPS Scheduler
+  dbus-broker.service                                   loaded active running D-Bus System Message Bus
+  dracut-shutdown.service                               loaded active exited  Restore /run/initramfs on shutdown
+  firewalld.service                                     loaded active running firewalld - dynamic firewall daemon
+  fwupd.service                                         loaded active running Firmware update daemon
+  gdm.service                                           loaded active running GNOME Display Manager
+  gssproxy.service                                      loaded active running GSSAPI Proxy Daemon
+  irqbalance.service                                    loaded active running irqbalance daemon
+  iscsi.service                                         loaded active exited  Login and scanning of iSCSI devices
+  kdump.service                                         loaded active exited  Crash recovery kernel arming
+  kmod-static-nodes.service                             loaded active exited  Create List of Static Device Nodes
+  libstoragemgmt.service                                loaded active running libstoragemgmt plug-in server daemon
+  lvm2-monitor.service                                  loaded active exited  Monitoring of LVM2 mirrors, snapshots etc. using dmeventd or progress polling
+  ModemManager.service                                  loaded active running Modem Manager
+  NetworkManager-wait-online.service                    loaded active exited  Network Manager Wait Online
+  NetworkManager.service                                loaded active running Network Manager
+  nis-domainname.service                                loaded active exited  Read and set NIS domainname from /etc/sysconfig/network
+  plymouth-quit-wait.service                            loaded active exited  Hold until boot process finishes up
+  plymouth-read-write.service                           loaded active exited  Tell Plymouth To Write Out Runtime Data
+  plymouth-start.service                                loaded active exited  Show Plymouth Boot Screen
+  polkit.service                                        loaded active running Authorization Manager
+  power-profiles-daemon.service                         loaded active running Power Profiles daemon
+  rhcd.service                                          loaded active running Remote Host Configuration daemon
+  rhsm.service                                          loaded active running RHSM dbus service
+  rhsmcertd.service                                     loaded active running Enable periodic update of entitlement certificates.
+  rpc-statd-notify.service                              loaded active exited  Notify NFS peers of a restart
+  rpcbind.service                                       loaded active running RPC Bind
+  rsyslog.service                                       loaded active running System Logging Service
+  rtkit-daemon.service                                  loaded active running RealtimeKit Scheduling Policy Service
+  sshd.service                                          loaded active running OpenSSH server daemon
+  sssd-kcm.service                                      loaded active running SSSD Kerberos Cache Manager
+  sssd.service                                          loaded active running System Security Services Daemon
+  switcheroo-control.service                            loaded active running Switcheroo Control Proxy service
+  systemd-fsck@dev-disk-by\x2duuid-EB2F\x2d29E6.service loaded active exited  File System Check on /dev/disk/by-uuid/EB2F-29E6
+  systemd-hostnamed.service                             loaded active running Hostname Service
+  systemd-journal-flush.service                         loaded active exited  Flush Journal to Persistent Storage
+  systemd-journald.service                              loaded active running Journal Service
+  systemd-logind.service                                loaded active running User Login Management
+  systemd-machined.service                              loaded active running Virtual Machine and Container Registration Service
+  systemd-modules-load.service                          loaded active exited  Load Kernel Modules
+  systemd-network-generator.service                     loaded active exited  Generate network units from Kernel command line
+  systemd-random-seed.service                           loaded active exited  Load/Save OS Random Seed
+  systemd-remount-fs.service                            loaded active exited  Remount Root and Kernel File Systems
+  systemd-sysctl.service                                loaded active exited  Apply Kernel Variables
+  systemd-tmpfiles-setup-dev.service                    loaded active exited  Create Static Device Nodes in /dev
+  systemd-tmpfiles-setup.service                        loaded active exited  Create Volatile Files and Directories
+  systemd-udev-settle.service                           loaded active exited  Wait for udev To Complete Device Initialization
+  systemd-udev-trigger.service                          loaded active exited  Coldplug All udev Devices
+  systemd-udevd.service                                 loaded active running Rule-based Manager for Device Events and Files
+  systemd-update-utmp.service                           loaded active exited  Record System Boot/Shutdown in UTMP
+  systemd-user-sessions.service                         loaded active exited  Permit User Sessions
+  systemd-vconsole-setup.service                        loaded active exited  Setup Virtual Console
+  tailscaled.service                                    loaded active running Tailscale node agent
+  udisks2.service                                       loaded active running Disk Manager
+  upower.service                                        loaded active running Daemon for power management
+  user-runtime-dir@1000.service                         loaded active exited  User Runtime Directory /run/user/1000
+  user@1000.service                                     loaded active running User Manager for UID 1000
+  vgauthd.service                                       loaded active running VGAuth Service for open-vm-tools
+  vmtoolsd.service                                      loaded active running Service for virtual machines hosted on VMware
+  wpa_supplicant.service                                loaded active running WPA supplicant
+
+LOAD   = Reflects whether the unit definition was properly loaded.
+ACTIVE = The high-level unit activation state, i.e. generalization of SUB.
+SUB    = The low-level unit activation state, values depend on unit type.
+67 loaded units listed.
+

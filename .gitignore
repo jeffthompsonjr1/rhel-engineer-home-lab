@@ -22,3 +22,7 @@ files/website-archives/*.zip
 # Python cache
 __pycache__/
 *.pyc
+
+#Daily logs
+docs/SRE-Progress*
+docs/daily_health_reports/daily_health_2026*
