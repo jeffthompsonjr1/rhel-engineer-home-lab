@@ -6,6 +6,16 @@ welcome_menu = ['Collect System Information','Review Patch Readiness','Post Patc
 
 def collect_system_info():
     print("\nCollecting System Information...")
+    print(f"\nHostname: {platform.node()}")
+    print(f"OS Family: {platform.system()}")
+    print(f"Machine Architecture: {platform.machine()}")
+    print(f"Kernel Release: {platform.release()}")
+    os_info = platform.freedesktop_os_release()
+    print(f"Distribution: {os_info['NAME']}")
+    try:
+        print(f"Distribution Version: {os_info['VERSION_ID']}\n")
+    except KeyError:
+        print("Distribution Version Unavailable")
 
 
 
