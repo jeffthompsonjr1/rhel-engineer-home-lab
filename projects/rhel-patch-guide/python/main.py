@@ -1,9 +1,9 @@
-import socket, platform
+import socket, platform, os, shutil
 
 
 # List of menu selections
 welcome_menu = ['Collect System Information','Review Patch Readiness','Post Patch Validation','Generate Report','Exit']
-
+critical_disk = ['/','/var','/boot']
 def collect_system_info():
     print("\nCollecting System Information...")
     print(f"\nHostname: {platform.node()}")
@@ -11,12 +11,25 @@ def collect_system_info():
     print(f"Machine Architecture: {platform.machine()}")
     print(f"Kernel Release: {platform.release()}")
     os_info = platform.freedesktop_os_release()
-    print(f"Distribution: {os_info['NAME']}")
-    try:
-        print(f"Distribution Version: {os_info['VERSION_ID']}\n")
-    except KeyError:
-        print("Distribution Version Unavailable")
-
+    print(f"Distribution: {os_info.get('NAME', 'Unknown')}")
+    print(f"Distribution Version: {os_info.get('VERSION_ID', 'Unavailable')}")
+    print(f"Logical CPUs: {os.cpu_count()}")
+    with open('/proc/meminfo', 'r') as file:
+        memory_info = file.read()
+    memory_lines = memory_info.splitlines()
+    for line in memory_lines:
+        if line.startswith('MemTotal:'):
+            total_memory = line.split()
+            print(f"Total memory: {int(total_memory[1])/1024:.2f} MiB")
+        elif line.startswith('MemAvailable:'):
+            available_memory = line.split()
+            print(f"Availiable Memory: {int(available_memory[1])/1024:.2f} MiB")
+    not_available_mem = ((int(total_memory[1])-int(available_memory[1]))/int(total_memory[1]))*100
+    print(f"% Memory Not Available: {int(not_available_mem):.2f}")
+    print("Critical Disk Usage:")
+    for disk in critical_disk:
+        print(f"{disk}: {shutil.disk_usage(disk)}")
+    print()
 
 
 
