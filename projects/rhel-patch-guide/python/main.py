@@ -1,19 +1,25 @@
-import socket, platform, os, shutil
+import socket, platform, os, shutil, fcntl, struct
 
 
 # List of menu selections
 welcome_menu = ['Collect System Information','Review Patch Readiness','Post Patch Validation','Generate Report','Exit']
 critical_disk = ['/','/var','/boot']
+line_break = '='*50
 def collect_system_info():
     print("\nCollecting System Information...")
+    print("\nOS Information")
+    print(line_break)
     print(f"\nHostname: {platform.node()}")
     print(f"OS Family: {platform.system()}")
     print(f"Machine Architecture: {platform.machine()}")
     print(f"Kernel Release: {platform.release()}")
     os_info = platform.freedesktop_os_release()
     print(f"Distribution: {os_info.get('NAME', 'Unknown')}")
-    print(f"Distribution Version: {os_info.get('VERSION_ID', 'Unavailable')}")
-    print(f"Logical CPUs: {os.cpu_count()}")
+    print(f"Distribution Version: {os_info.get('VERSION_ID', 'Unavailable')}\n")
+    print("CPU & Memory")
+    print(line_break)
+    print(f"\nLogical CPUs: {os.cpu_count()}")
+
     with open('/proc/meminfo', 'r') as file:
         memory_info = file.read()
     memory_lines = memory_info.splitlines()
@@ -25,11 +31,38 @@ def collect_system_info():
             available_memory = line.split()
             print(f"Availiable Memory: {int(available_memory[1])/1024:.2f} MiB")
     not_available_mem = ((int(total_memory[1])-int(available_memory[1]))/int(total_memory[1]))*100
-    print(f"% Memory Not Available: {int(not_available_mem):.2f}")
-    print("Critical Disk Usage:")
+    print(f"% Memory Not Available: {(not_available_mem):.2f}")
+    print("\nCritical Disk Usage:")
     for disk in critical_disk:
-        print(f"{disk}: {shutil.disk_usage(disk)}")
-    print()
+        disk_info = shutil.disk_usage(disk)
+        print(f"Disk Info Usage for {disk}")
+        print(f"Total: {(disk_info.total)/(1024**3):.2f} GiB")
+        print(f"Used: {(disk_info.used)/(1024**3):.2f} GiB")
+        print(f"Free: {(disk_info.free)/(1024**3):.2f} GiB")
+        print(f"Disk Utilization = {((disk_info.used/disk_info.total)*100):.2f}%")
+        fs_path_info = os.stat(disk)
+        print(f"Path:{disk} Device ID: {fs_path_info.st_dev}\n")
+    print("Network Config")
+    print(line_break)
+    print(f"\nHostname: {socket.gethostname()}")
+    print(f"FQDN:  {socket.getfqdn()}")
+    network_interfaces = (os.listdir('/sys/class/net'))
+    print("Network Interfaces:")
+    for interface in network_interfaces:
+        with open(f"/sys/class/net/{interface}/operstate", 'r') as file:
+            interface_path = file.read().strip()
+        with open(f"/sys/class/net/{interface}/address", 'r') as file:
+            ip_address = file.read().strip()
+        print(f"Interface ID:{interface} State: {interface_path} MAC Address:{ip_address} ")
+    print("DNS Nameservers:")
+    with open('/etc/resolv.conf', 'r') as file:
+     contents = file.readlines()
+     for content in contents:
+        if content.strip().startswith('nameserver'):
+            print(content.strip())
+    print("")
+
+    
 
 
 
