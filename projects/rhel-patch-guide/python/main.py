@@ -1,4 +1,4 @@
-import socket, platform, os, shutil, fcntl, struct
+import socket, platform, os, shutil, subprocess
 
 
 # List of menu selections
@@ -13,9 +13,9 @@ def collect_system_info():
     print(f"OS Family: {platform.system()}")
     print(f"Machine Architecture: {platform.machine()}")
     print(f"Kernel Release: {platform.release()}")
-    os_info = platform.freedesktop_os_release()
-    print(f"Distribution: {os_info.get('NAME', 'Unknown')}")
-    print(f"Distribution Version: {os_info.get('VERSION_ID', 'Unavailable')}\n")
+    # os_info = platform.freedesktop_os_release()
+    # print(f"Distribution: {os_info.get('NAME', 'Unknown')}")
+    # print(f"Distribution Version: {os_info.get('VERSION_ID', 'Unavailable')}\n")
     print("CPU & Memory")
     print(line_break)
     print(f"\nLogical CPUs: {os.cpu_count()}")
@@ -61,8 +61,70 @@ def collect_system_info():
         if content.strip().startswith('nameserver'):
             print(content.strip())
     print("")
+    print("Default Gateway:")
+    with open('/proc/net/route', 'r') as file:
+     contents = file.readlines()
+     for content in contents:
+        content = content.split()
+        if content[1] == '00000000':
+            interface = content[0]
+            gateway = content[2]
+            first_oct = int(gateway[6:8], 16)
+            second_oct = int(gateway[4:6], 16)
+            third_oct = int(gateway[2:4], 16)
+            fourth_oct = int(gateway[0:2], 16)
+            gateway = f"{first_oct}.{second_oct}.{third_oct}.{fourth_oct}"
+            print(f"Interface: {interface}")
+            print(f"Gateway: {gateway}")
+
+    result = subprocess.run(
+        ["ip", "-o", "-4", "addr", "show"],
+        capture_output=True,
+        text=True
+    )
+    print("\nIPv4 Addresses: ")
+    ipv4=result.stdout.splitlines()
+    for line in ipv4:
+        address=line.split()
+        print(f"{address[0]} {address[1]}: \t{address[3]}")
+    print("")
 
     
+def review_patch_readiness():
+    print("Reviewing Patch Readiness...")
+    print(line_break)
+    print("Checking for available package updates...")
+    result = subprocess.run (
+        ["dnf", "-q", "check-update"],
+        capture_output=True,
+        text=True
+    )
+    if result.returncode == 100:
+        print(f'Status: Updates Available')
+        print(f'DNF Exit Code: {result.returncode}\n')
+        number=0
+        packages=result.stdout.splitlines()
+        for package in packages:
+            update=package.split()
+            # print(f"{number}. {update}")
+            if 'Obsoleting' in update:
+                            break
+            elif len(update) == 3:
+                number+=1
+                print(f"\n{number}. \nPackage:{update[0]}")
+                print(f"Version: {update[1]}")
+                print(f"Repository: {update[2]}")
+
+        print(f"\n{line_break}")
+        print(f'Total Available Package Updates: {number}')
+        print(f"{line_break}\n")
+    elif result.returncode == 0:      
+        print(f'Status: Updates Not Available')
+        print(f'DNF Exit Code: {result.returncode}\n')
+    else:
+        print(f'Status: An Error Occured')
+        print(f'DNF Exit Code: {result.returncode}\n')
+
 
 
 
@@ -83,7 +145,9 @@ def display_menu():
         if option_selection < 5 and option_selection > 0:
             print(f'\n{option_selection}. {welcome_menu[option_selection - 1]}\n')             
             if option_selection == 1:
-                collect_system_info()        
+                collect_system_info()
+            elif option_selection == 2:
+                review_patch_readiness()        
         elif option_selection == 5:
             print("\nExiting Program\n")
             break
