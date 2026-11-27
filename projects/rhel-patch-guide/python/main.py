@@ -16,6 +16,17 @@ def collect_system_info():
     # os_info = platform.freedesktop_os_release()
     # print(f"Distribution: {os_info.get('NAME', 'Unknown')}")
     # print(f"Distribution Version: {os_info.get('VERSION_ID', 'Unavailable')}\n")
+    with open('/etc/os-release', 'r') as file:
+     Osinfo=file.readlines()
+    for info in Osinfo:
+        if info.startswith('NAME'):
+            distro_name = info.split('=')
+        elif info.startswith('VERSION_ID'):
+            distro_version = info.split('=')
+    clean_name = distro_name[1].strip().strip('"')
+    clean_version = distro_version[1].strip().strip('"')
+    print(f"Distribution: {clean_name}")
+    print(f"Distribution Version: {clean_version}")
     print("CPU & Memory")
     print(line_break)
     print(f"\nLogical CPUs: {os.cpu_count()}")
