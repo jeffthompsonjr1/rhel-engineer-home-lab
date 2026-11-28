@@ -1,5 +1,6 @@
 import socket, platform, os, shutil, subprocess
-
+from datetime import datetime
+from contextlib import redirect_stdout
 
 # List of menu selections
 welcome_menu = ['Collect System Information','Review Patch Readiness','Post Patch Validation','Generate Report','Exit']
@@ -104,17 +105,41 @@ def collect_system_info():
 def review_patch_readiness():
     print("Reviewing Patch Readiness...")
     print(line_break)
-    print("Checking for available package updates...")
-    result = subprocess.run (
-        ["dnf", "-q", "check-update"],
-        capture_output=True,
-        text=True
-    )
-    if result.returncode == 100:
-        print(f'Status: Updates Available')
-        print(f'DNF Exit Code: {result.returncode}\n')
+    print("Reviewing current installed packages...")
+    result = subprocess.run(
+    ['dnf', '-q', 'list','installed'],
+    capture_output=True,
+    text=True
+)
+
+    if result.returncode == 0:
+        installed_packages = result.stdout.splitlines()
+        installed = {}
+        for packages in installed_packages:
+            package = (packages.strip().split())
+            if len(package) == 3:
+                if package[0] not in installed:
+                    installed[package[0]]=[]
+                installed[package[0]].append(package[1])                
+    else:
+        print(f'Error: {result.returncode}')
+        print(result.stderr)
+        return
+
+
+
+    print("\nChecking for available package updates...")
+    available_result = subprocess.run (
+    ["dnf", "-q", "check-update"],
+    capture_output=True,
+    text=True
+)
+    if available_result.returncode == 100:
+        print('Status: Updates Available')
+        print(f'DNF Exit Code: {available_result.returncode}\n')
         number=0
-        packages=result.stdout.splitlines()
+        packages=available_result.stdout.splitlines()
+        print()
         for package in packages:
             update=package.split()
             # print(f"{number}. {update}")
@@ -123,23 +148,39 @@ def review_patch_readiness():
             elif len(update) == 3:
                 number+=1
                 print(f"\n{number}. \nPackage:{update[0]}")
-                print(f"Version: {update[1]}")
+                if update[0] in installed:
+                 Installed = installed[update[0]]
+                else:
+                    Installed = "No matching installed package found"
+                print(f"Installed Version: {Installed}")
+                print(f"Available Upated Version: {update[1]}")
                 print(f"Repository: {update[2]}")
+            
+    
 
         print(f"\n{line_break}")
-        print(f'Total Available Package Updates: {number}')
+        print(f'\nTotal Available Package Updates: {number}')
         print(f"{line_break}\n")
-    elif result.returncode == 0:      
+    elif available_result.returncode == 0:      
         print(f'Status: Updates Not Available')
-        print(f'DNF Exit Code: {result.returncode}\n')
+        print(f'DNF Exit Code: {available_result.returncode}\n')
     else:
         print(f'Status: An Error Occured')
-        print(f'DNF Exit Code: {result.returncode}\n')
-
-
+        print(f'DNF Exit Code: {available_result.returncode}\n')
 
 
 #Function that prints the menu list items
+def generate_report():
+    timestamp = datetime.now().strftime('%Y-%m-%d_%H%M%S')
+    report_name = f"Patching_report_{platform.node()}_{timestamp}.txt"
+    with open(report_name, 'w') as file:
+        with redirect_stdout(file):
+            collect_system_info()
+            review_patch_readiness()
+
+    print(f'Report Generated: {report_name}')
+
+
 def display_menu():
     print('\n PATCHING PROCEDURE MENU\n')
     while True:
@@ -158,7 +199,9 @@ def display_menu():
             if option_selection == 1:
                 collect_system_info()
             elif option_selection == 2:
-                review_patch_readiness()        
+                review_patch_readiness()
+            elif option_selection == 4:
+                generate_report()        
         elif option_selection == 5:
             print("\nExiting Program\n")
             break
